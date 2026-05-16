@@ -1,27 +1,32 @@
   ════════════════════════════════════════════════════════════════════════════════
-                        MMU SIMULATION  —  CLEAN ACCESS LOG                       
-                           Started : 2026-05-16 15:08:19                          
+                 MMU SIMULATION  —  2-LEVEL HIERARCHICAL ACCESS LOG               
+                           Run Time : 2026-05-16 15:30:31                         
   ════════════════════════════════════════════════════════════════════════════════
 
-  [ FILES TRACKED ]
+  [ TARGET FILE ARCHITECTURES ]
   ────────────────────────────────────────────────────────────────────────────────
-  File : inventory.db  |  40 bytes  |  4 pages  (PAGE_SIZE=10)
+  File : inventory.db     | Size : 40  bytes | Blocks : 4 pages (PAGE_SIZE=10)
   ────────────────────────────────────────────────────────────────────────────────
-  File : video_meta.dat  |  60 bytes  |  6 pages  (PAGE_SIZE=10)
+  File : video_meta.dat   | Size : 60  bytes | Blocks : 6 pages (PAGE_SIZE=10)
   ────────────────────────────────────────────────────────────────────────────────
-  File : app_logs.txt  |  30 bytes  |  3 pages  (PAGE_SIZE=10)
+  File : app_logs.txt     | Size : 30  bytes | Blocks : 3 pages (PAGE_SIZE=10)
   ────────────────────────────────────────────────────────────────────────────────
 
 
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #01  |  READ  |  File: inventory.db  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.283539
+  Timestamp : 2026-05-16 15:30:31.530927
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
 
   TLB (1/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -41,12 +46,18 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #02  |  READ  |  File: inventory.db  |  Page: P1
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.283539
+  Timestamp : 2026-05-16 15:30:31.530927
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F1          ║
 
   TLB (2/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -67,12 +78,19 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #03  |  READ  |  File: video_meta.dat  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.283539
+  Timestamp : 2026-05-16 15:30:31.530927
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F1          ║
+  ║  video_meta.dat          [0]           [0]           P0            F2          ║
 
   TLB (3/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -94,12 +112,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #04  |  READ  |  File: video_meta.dat  |  Page: P1
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.283539
+  Timestamp : 2026-05-16 15:30:31.531974
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F1          ║
+  ║  video_meta.dat          [0]           [0]           P0            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -122,12 +148,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #05  |  READ  |  File: inventory.db  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.531974
   Result    : TLB_HIT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F1          ║
+  ║  video_meta.dat          [0]           [0]           P0            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -150,12 +184,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #06  |  READ  |  File: app_logs.txt  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.531974
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  video_meta.dat          [0]           [0]           P0            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -178,12 +220,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #07  |  READ  |  File: inventory.db  |  Page: P1
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.531974
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -206,13 +256,21 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #08  |  WRITE  |  File: app_logs.txt  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.533011
   Result    : TLB_HIT
-  Written   : b'PATCHED___'
+  Written   : PATCHED___
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -235,12 +293,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #09  |  READ  |  File: inventory.db  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.533011
   Result    : TLB_HIT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F2          ║
+  ║  video_meta.dat          [0]           [1]           P1            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -263,12 +329,20 @@
   ════════════════════════════════════════════════════════════════════════════════
   ACCESS #10  |  READ  |  File: video_meta.dat  |  Page: P0
   ════════════════════════════════════════════════════════════════════════════════
-  Timestamp : 2026-05-16 15:08:19.284537
+  Timestamp : 2026-05-16 15:30:31.533011
   Result    : FAULT
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F2          ║
+  ║  video_meta.dat          [0]           [0]           P0            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
@@ -289,12 +363,20 @@
   ║  3           7           3           0           ║
 
   ════════════════════════════════════════════════════════════════════════════════
-  SIMULATION COMPLETE
+  SIMULATION RUN COMPLETE
   ════════════════════════════════════════════════════════════════════════════════
 
   ┌────────────────────────────────────────────────────────────────────────────┐
-  │                           MMU HARDWARE SNAPSHOT                            │
+  │                   MMU HARDWARE SNAPSHOT (2-LEVEL PAGING)                   │
   └────────────────────────────────────────────────────────────────────────────┘
+
+  2-LEVEL PAGE TABLE MAPPING TABLE:
+  ║  FILE ID                 OUTER DIR     INNER TABLE   VIRT PAGE     RAM FRAME   ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║  inventory.db            [0]           [0]           P0            F0          ║
+  ║  inventory.db            [0]           [1]           P1            F2          ║
+  ║  video_meta.dat          [0]           [0]           P0            F3          ║
+  ║  app_logs.txt            [0]           [0]           P0            F1          ║
 
   TLB (4/4)
   ║  PAGE KEY                        FRAME       STATUS      ║
