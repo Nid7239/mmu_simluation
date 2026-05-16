@@ -38,16 +38,14 @@ def run():
 
     with open("output.log", "w", encoding="utf-8") as log:
         log.write("  " + "═" * W + "\n")
-        log.write("  " + "MMU SIMULATION  —  FULL ACCESS LOG".center(W) + "\n")
+        log.write("  " + "MMU SIMULATION  —  CLEAN ACCESS LOG".center(W) + "\n")
         log.write("  " + f"Started : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}".center(W) + "\n")
         log.write("  " + "═" * W + "\n")
 
-        log.write("\n  [ FILES GENERATED VIA os.urandom() ]\n")
+        log.write("\n  [ FILES TRACKED ]\n")
         for f in (f1, f2, f3):
             log.write(f"  {'─'*W}\n")
             log.write(f"  File : {f.file_id}  |  {f.size} bytes  |  {f.num_pages} pages  (PAGE_SIZE={PAGE_SIZE})\n")
-            for p in range(f.num_pages):
-                log.write(f"    P{p}  →  {f.read_page(p).hex(' ')}\n")
         log.write(f"  {'─'*W}\n\n")
 
         for n, (fobj, p_idx, wdata) in enumerate(access_list, 1):
@@ -57,7 +55,7 @@ def run():
             log.write(access_banner(n, fobj, p_idx, wdata) + "\n")
             log.write(f"  Timestamp : {ts}\n")
             log.write(f"  Result    : {status}\n")
-            log.write(f"  Data      : {data.hex(' ')}\n")
+            # Omitted log.write(f"  Data      : ...") to hide raw hexadecimal logs
             if wdata:
                 log.write(f"  Written   : {wdata}\n")
             log.write(mmu.dump_state(accessed_file_id=fobj.file_id))

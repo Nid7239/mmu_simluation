@@ -1,7 +1,5 @@
 import os
 from constants import PAGE_SIZE
-
-
 class PhysicalFile:
     def __init__(self, path, num_pages: int = 4):
         self.path = path
@@ -9,16 +7,11 @@ class PhysicalFile:
         # Remove old file if exists
         if os.path.exists(path):
             os.remove(path)
-
-        # Generate real random binary data using os.urandom()
-        # (same as dd if=/dev/urandom on Linux — works on Windows too)
         with open(path, "wb") as f:
             f.write(os.urandom(num_pages * PAGE_SIZE))
-
         self.file_id   = os.path.basename(path)
         self.size      = os.path.getsize(path)
         self.num_pages = (self.size + PAGE_SIZE - 1) // PAGE_SIZE
-
     def read_page(self, page_idx: int) -> bytes:
         if page_idx < 0 or page_idx >= self.num_pages:
             raise IndexError(
