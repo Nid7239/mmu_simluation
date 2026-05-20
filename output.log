@@ -3,39 +3,20 @@
  ACCESS #1   | File: app_logs.txt    | Page: 0    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #1     | File: app_logs.txt    | Page: 0    | Mode: READ (Page Fault -> Loaded into Free Frame)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.623445          
-1        -                    -        False    Free         -                        
-2        -                    -        False    Free         -                        
-3        -                    -        False    Free         -                        
-4        -                    -        False    Free         -                        
+0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+1        None                 None     False    Free         -                        
+2        None                 None     False    Free         -                        
+3        None                 None     False    Free         -                        
+4        None                 None     False    Free         -                        
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 1
-Page Hits        : 0
-Page Faults      : 1
-Hit Ratio        : 0.00%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
 ==========================================================================================
 
 
@@ -43,45 +24,24 @@ Writebacks       : 0
  ACCESS #2   | File: user_db.bin     | Page: 0    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #2     | File: user_db.bin     | Page: 0    | Mode: READ (Page Fault -> Loaded into Free Frame)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.623445          
-1        user_db.bin          0        False    Occupied     15:58:01.634590          
-2        -                    -        False    Free         -                        
-3        -                    -        False    Free         -                        
-4        -                    -        False    Free         -                        
+0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+1        user_db.bin          0        False    Occupied     16:10:14.958042          
+2        None                 None     False    Free         -                        
+3        None                 None     False    Free         -                        
+4        None                 None     False    Free         -                        
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 2
-Page Hits        : 0
-Page Faults      : 2
-Hit Ratio        : 0.00%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [1]
 ==========================================================================================
 
 
@@ -89,51 +49,28 @@ Writebacks       : 0
  ACCESS #3   | File: config.json     | Page: 1    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #3     | File: config.json     | Page: 1    | Mode: READ (Page Fault -> Loaded into Free Frame)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.623445          
-1        user_db.bin          0        False    Occupied     15:58:01.634590          
-2        config.json          1        False    Occupied     15:58:01.645463          
-3        -                    -        False    Free         -                        
-4        -                    -        False    Free         -                        
+0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+1        user_db.bin          0        False    Occupied     16:10:14.958042          
+2        config.json          1        False    Occupied     16:10:14.969141          
+3        None                 None     False    Free         -                        
+4        None                 None     False    Free         -                        
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: config.json]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [1 ] ──► [VP 1  ] ──► VALID ──► Physical Frame [2]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 3
-Page Hits        : 0
-Page Faults      : 3
-Hit Ratio        : 0.00%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [1]
+File: config.json
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [1] ──► Frame [2]
 ==========================================================================================
 
 
@@ -141,57 +78,32 @@ Writebacks       : 0
  ACCESS #4   | File: cache.dat       | Page: 0    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #4     | File: cache.dat       | Page: 0    | Mode: READ (Page Fault -> Loaded into Free Frame)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.623445          
-1        user_db.bin          0        False    Occupied     15:58:01.634590          
-2        config.json          1        False    Occupied     15:58:01.645463          
-3        cache.dat            0        False    Occupied     15:58:01.656544          
-4        -                    -        False    Free         -                        
+0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+1        user_db.bin          0        False    Occupied     16:10:14.958042          
+2        config.json          1        False    Occupied     16:10:14.969141          
+3        cache.dat            0        False    Occupied     16:10:14.979990          
+4        None                 None     False    Free         -                        
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: config.json]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [1 ] ──► [VP 1  ] ──► VALID ──► Physical Frame [2]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: cache.dat]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [3]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 4
-Page Hits        : 0
-Page Faults      : 4
-Hit Ratio        : 0.00%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [1]
+File: config.json
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [1] ──► Frame [2]
+File: cache.dat
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [3]
 ==========================================================================================
 
 
@@ -199,190 +111,109 @@ Writebacks       : 0
  ACCESS #5   | File: report.pdf      | Page: 2    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #5     | File: report.pdf      | Page: 2    | Mode: READ (Page Fault -> Loaded into Free Frame)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.623445          
-1        user_db.bin          0        False    Occupied     15:58:01.634590          
-2        config.json          1        False    Occupied     15:58:01.645463          
-3        cache.dat            0        False    Occupied     15:58:01.656544          
-4        report.pdf           2        False    Occupied     15:58:01.667625          
+0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+1        user_db.bin          0        False    Occupied     16:10:14.958042          
+2        config.json          1        False    Occupied     16:10:14.969141          
+3        cache.dat            0        False    Occupied     16:10:14.979990          
+4        report.pdf           2        False    Occupied     16:10:14.991388          
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: config.json]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [1 ] ──► [VP 1  ] ──► VALID ──► Physical Frame [2]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: cache.dat]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [3]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: report.pdf]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [2 ] ──► [VP 2  ] ──► VALID ──► Physical Frame [4]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 5
-Page Hits        : 0
-Page Faults      : 5
-Hit Ratio        : 0.00%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [1]
+File: config.json
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [1] ──► Frame [2]
+File: cache.dat
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [3]
+File: report.pdf
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [2] ──► Frame [4]
 ==========================================================================================
 
 
 ===============================================================================================
- ACCESS #6   | File: app_logs.txt    | Page: 0    | Mode: READ (Page Hit -> Renews Timestamp for app_logs)
+ ACCESS #6   | File: app_logs.txt    | Page: 0    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #6     | File: app_logs.txt    | Page: 0    | Mode: READ (Page Hit -> Renews Timestamp)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.678933          
-1        user_db.bin          0        False    Occupied     15:58:01.634590          
-2        config.json          1        False    Occupied     15:58:01.645463          
-3        cache.dat            0        False    Occupied     15:58:01.656544          
-4        report.pdf           2        False    Occupied     15:58:01.667625          
+0        app_logs.txt         0        False    Occupied     16:10:15.002048          
+1        user_db.bin          0        False    Occupied     16:10:14.958042          
+2        config.json          1        False    Occupied     16:10:14.969141          
+3        cache.dat            0        False    Occupied     16:10:14.979990          
+4        report.pdf           2        False    Occupied     16:10:14.991388          
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: config.json]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [1 ] ──► [VP 1  ] ──► VALID ──► Physical Frame [2]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: cache.dat]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [3]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: report.pdf]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [2 ] ──► [VP 2  ] ──► VALID ──► Physical Frame [4]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 6
-Page Hits        : 1
-Page Faults      : 5
-Hit Ratio        : 16.67%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [1]
+File: config.json
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [1] ──► Frame [2]
+File: cache.dat
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [3]
+File: report.pdf
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [2] ──► Frame [4]
 ==========================================================================================
 
 
 ===============================================================================================
- ACCESS #7   | File: user_db.bin     | Page: 3    | Mode: READ (RAM FULL -> LRU TRIGGERED ACROSS FILES)
+ ACCESS #7   | File: user_db.bin     | Page: 3    | Mode: READ
 ===============================================================================================
 
-===============================================================================================
- ACCESS #7     | File: user_db.bin     | Page: 3    | Mode: READ (RAM FULL -> LRU TRIGGERED)
-===============================================================================================
-MMU SIMULATION RESULT - MULTI-LEVEL STRUCTURAL ARCHITECTURE VIEW
-==========================================================================================================
-
-1. PHYSICAL RAM (FRAME TABLE)
+=== 1. PHYSICAL RAM (FRAME TABLE) ===
+Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-Frame    File ID              Page     Dirty    Status       Last System Access Time  
--------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     15:58:01.678933          
-1        user_db.bin          3        False    Occupied     15:58:01.689833          
-2        config.json          1        False    Occupied     15:58:01.645463          
-3        cache.dat            0        False    Occupied     15:58:01.656544          
-4        report.pdf           2        False    Occupied     15:58:01.667625          
+0        app_logs.txt         0        False    Occupied     16:10:15.002048          
+1        user_db.bin          3        False    Occupied     16:10:15.012600          
+2        config.json          1        False    Occupied     16:10:14.969141          
+3        cache.dat            0        False    Occupied     16:10:14.979990          
+4        report.pdf           2        False    Occupied     16:10:14.991388          
 
-2. THREE-LEVEL PAGE TABLE HIERARCHICAL DIAGRAM
--------------------------------------------------------------------------------------------------------------------
-
-[Root Directory File: app_logs.txt]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [0]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: user_db.bin]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [3 ] ──► [VP 3  ] ──► VALID ──► Physical Frame [1]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: config.json]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [1 ] ──► [VP 1  ] ──► VALID ──► Physical Frame [2]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: cache.dat]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [0 ] ──► [VP 0  ] ──► VALID ──► Physical Frame [3]
- └── Remaining unallocated directory space branches are null entries.
-
-[Root Directory File: report.pdf]
- ├── Level 1 Directory Index [0]
- │    └── Level 2 Table Index [0]
- │          └── Level 3 Index [2 ] ──► [VP 2  ] ──► VALID ──► Physical Frame [4]
- └── Remaining unallocated directory space branches are null entries.
-
-4. STATISTICS
---------------------------------------------------------------------------------
-Total Accesses   : 7
-Page Hits        : 1
-Page Faults      : 6
-Hit Ratio        : 14.29%
-TLB Hits         : 0
-Writebacks       : 0
+=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
+File: app_logs.txt
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [0]
+File: user_db.bin
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [3] ──► Frame [1]
+File: config.json
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [1] ──► Frame [2]
+File: cache.dat
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [0] ──► Frame [3]
+File: report.pdf
+  ├── Level 1 [0]
+  │    └── Level 2 [0]
+  │          └── Level 3 [2] ──► Frame [4]
 ==========================================================================================
 
