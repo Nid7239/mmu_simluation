@@ -1,14 +1,15 @@
+from constants import PAGE_SIZE
+from typing import Optional
+
 class Frame:
+    """Physical Frame"""
     def __init__(self, idx: int):
-        self.idx = idx
-        self.page = None       # String label (e.g., "inventory.db_p0")
-        self.data = None       # Holds the byte data or clean text string
-        self.dirty = False     # Flips to True when a WRITE operation occurs
-        self.p_file = None     # Reference to the PhysicalFile object for write-backs
+        self.idx: int = idx
+        self.data: bytes = b'\0' * PAGE_SIZE      # ← Now it will work
+        self.p_file = None
+        self.dirty: bool = False
 
     def clear(self):
-        """Resets the physical frame slot to an empty state."""
-        self.page = None
-        self.data = None
-        self.dirty = False
+        self.data = b'\0' * PAGE_SIZE
         self.p_file = None
+        self.dirty = False

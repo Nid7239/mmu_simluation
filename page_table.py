@@ -1,46 +1,93 @@
+from datetime import datetime
+from typing import Optional, Dict
+
 class PageTableEntry:
-    def __init__(self, frame_idx: int):
-        self.frame_idx = frame_idx  # Points to the index in physical RAM
+    def __init__(self, frame_idx: int, timestamp: datetime):
+        self.frame_idx = frame_idx
+        self.timestamp = timestamp
+        self.dirty = False
 
-class PageTable:
+# ==================== Level 3 ====================
+class PageTableLevel3:
     def __init__(self):
-        # Explicit 2-Level Structure
-        # Format: { file_id : { outer_directory_idx : { inner_page_idx : PageTableEntry } } }
-        self.outer_page_directory = {}
+        self.entries: Dict[int, PageTableEntry] = {}
 
-    def _split_page(self, page_idx: int) -> tuple[int, int]:
-        """Splits a flat page number into an Outer and Inner index row."""
-        outer_idx = page_idx // 2
-        inner_idx = page_idx % 2
-        return outer_idx, inner_idx
+    def get(self, idx: int) -> Optional[PageTableEntry]:
+        return self.entries.get(idx)
 
-    def get(self, file_id: str, page_idx: int) -> PageTableEntry:
-        """Traverses the 2 levels to find an entry. Returns None if it's a Miss."""
-        outer_idx, inner_idx = self._split_page(page_idx)
-        
-        if file_id in self.outer_page_directory:
-            outer_dir = self.outer_page_directory[file_id]
-            if outer_idx in outer_dir:
-                inner_table = outer_dir[outer_idx]
-                if inner_idx in inner_table:
-                    return inner_table[inner_idx]
-        return None
+    def map(self, idx: int, frame_idx: int, timestamp: datetime):
+        self.entries[idx] = PageTableEntry(frame_idx, timestamp)
 
-    def map(self, file_id: str, page_idx: int, frame_idx: int, timestamp=None):
-        """Creates or updates the multi-level pathway to assign a page to a RAM frame slot."""
-        outer_idx, inner_idx = self._split_page(page_idx)
-        
-        if file_id not in self.outer_page_directory:
-            self.outer_page_directory[file_id] = {}
-        if outer_idx not in self.outer_page_directory[file_id]:
-            self.outer_page_directory[file_id][outer_idx] = {}
-            
-        self.outer_page_directory[file_id][outer_idx][inner_idx] = PageTableEntry(frame_idx)
+    def unmap(self, idx: int):
+        self.entries.pop(idx, None)
+
+# ==================== Level 2 ====================
+class PageTableLevel2:
+    def __init__(self):
+        self.level3: Dict[int, PageTableLevel3] = {}
+
+    def get_or_create(self, idx: int) -> PageTableLevel3:
+        if idx not in self.level3:
+            self.level3[idx] = PageTableLevel3()
+        return self.level3[idx]
+
+    def get(self, idx: int) -> Optional[PageTableLevel3]:
+        return self.level3.get(idx)
+
+# ==================== Level 1 ====================
+class PageTableLevel1:
+    def __init__(self):
+        self.level2: Dict[int, PageTableLevel2] = {}
+
+    def get_or_create(self, idx: int) -> PageTableLevel2:
+        if idx not in self.level2:
+            self.level2[idx] = PageTableLevel2()
+        return self.level2[idx]
+
+    def get(self, idx: int) -> Optional[PageTableLevel2]:
+        return self.level2.get(idx)
+
+# ==================== Top Level ====================
+class PageDirectory:
+    """Page Directory - Top Level"""
+    def __init__(self):
+        self.files: Dict[str, PageTableLevel1] = {}
+
+    def _split(self, page_idx: int) -> tuple[int, int, int]:
+        l1 = (page_idx >> 10) & 0x3F
+        l2 = (page_idx >> 5) & 0x1F
+        l3 = page_idx & 0x1F
+        return l1, l2, l3
+
+    def get(self, file_id: str, page_idx: int) -> Optional[PageTableEntry]:
+        if file_id not in self.files:
+            return None
+        l1, l2, l3 = self._split(page_idx)
+        level1 = self.files[file_id]
+        level2 = level1.get(l1)
+        if not level2:
+            return None
+        level3 = level2.get(l2)
+        if not level3:
+            return None
+        return level3.get(l3)
+
+    def map(self, file_id: str, page_idx: int, frame_idx: int, timestamp: datetime):
+        if file_id not in self.files:
+            self.files[file_id] = PageTableLevel1()
+        l1, l2, l3 = self._split(page_idx)
+        level2 = self.files[file_id].get_or_create(l1)
+        level3 = level2.get_or_create(l2)
+        level3.map(l3, frame_idx, timestamp)
 
     def unmap(self, file_id: str, page_idx: int):
-        """Removes an old entry path when a page gets evicted from memory."""
-        outer_idx, inner_idx = self._split_page(page_idx)
-        
-        if file_id in self.outer_page_directory:
-            if outer_idx in self.outer_page_directory[file_id]:
-                self.outer_page_directory[file_id][outer_idx].pop(inner_idx, None)
+        if file_id in self.files:
+            l1, l2, l3 = self._split(page_idx)
+            try:
+                level2 = self.files[file_id].get(l1)
+                if level2:
+                    level3 = level2.get(l2)
+                    if level3:
+                        level3.unmap(l3)
+            except:
+                pass
