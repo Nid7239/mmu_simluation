@@ -1,3 +1,4 @@
+# page_table.py
 from datetime import datetime
 from typing import Optional, Dict
 
@@ -47,13 +48,13 @@ class PageTableLevel1:
     def get(self, idx: int) -> Optional[PageTableLevel2]:
         return self.level2.get(idx)
 
-# ==================== Top Level ====================
+# ==================== Top Level Directory ====================
 class PageDirectory:
-    """Page Directory - Top Level"""
     def __init__(self):
         self.files: Dict[str, PageTableLevel1] = {}
 
     def _split(self, page_idx: int) -> tuple[int, int, int]:
+        """Splits a logical page index into 3 distinct hierarchical lookup keys using bitwise shifts."""
         l1 = (page_idx >> 10) & 0x3F
         l2 = (page_idx >> 5) & 0x1F
         l3 = page_idx & 0x1F
@@ -83,11 +84,8 @@ class PageDirectory:
     def unmap(self, file_id: str, page_idx: int):
         if file_id in self.files:
             l1, l2, l3 = self._split(page_idx)
-            try:
-                level2 = self.files[file_id].get(l1)
-                if level2:
-                    level3 = level2.get(l2)
-                    if level3:
-                        level3.unmap(l3)
-            except:
-                pass
+            level2 = self.files[file_id].get(l1)
+            if level2:
+                level3 = level2.get(l2)
+                if level3:
+                    level3.unmap(l3)
