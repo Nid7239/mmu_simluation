@@ -24,7 +24,7 @@ class PageTableLevel3:
 
 # ==================== Level 2 ====================
 class PageTableLevel2:
-    def __init__(self):
+    def __init__(self):#holds the links to the next level down
         self.level3: Dict[int, PageTableLevel3] = {}
 
     def get_or_create(self, idx: int) -> PageTableLevel3:

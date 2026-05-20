@@ -3,6 +3,7 @@ from typing import Optional, Tuple, Dict
 
 class BSTNode:
     def __init__(self, key: Tuple[str, int], timestamp: datetime):
+        #Initializes the BST to index pages by their 'last accessed' time.
         self.key = key
         self.timestamp = timestamp
         self.left = None
@@ -24,16 +25,17 @@ class LRUBST:
     def remove_oldest(self) -> Optional[Tuple[str, int]]:
         if not self.root:
             return None
-        key = self._get_oldest()
-        self._delete_node(self.node_map[key])
-        del self.node_map[key]
+        
+        oldest_node = self._get_minimum_node(self.root)
+        key = oldest_node.key
+        self._delete_node(oldest_node)
         return key
 
-    def _get_oldest(self) -> Tuple[str, int]:
-        curr = self.root
+    def _get_minimum_node(self, node: BSTNode) -> BSTNode:
+        curr = node
         while curr.left:
             curr = curr.left
-        return curr.key
+        return curr
 
     def _insert_bst(self, node: BSTNode):
         if not self.root:
@@ -42,12 +44,14 @@ class LRUBST:
         curr = self.root
         while True:
             if node.timestamp < curr.timestamp:
+                # New node is OLDER, so it MUST go left
                 if not curr.left:
                     curr.left = node
                     node.parent = curr
                     break
                 curr = curr.left
             else:
+                # New node is NEWER, so it MUST go right
                 if not curr.right:
                     curr.right = node
                     node.parent = curr
@@ -55,6 +59,10 @@ class LRUBST:
                 curr = curr.right
 
     def _delete_node(self, node: BSTNode):
+        # Clean up mapping before deletion
+        if node.key in self.node_map:
+            del self.node_map[node.key]
+
         if not node.left and not node.right:
             self._replace_node(node, None)
         elif not node.left:
@@ -62,23 +70,21 @@ class LRUBST:
         elif not node.right:
             self._replace_node(node, node.left)
         else:
-            successor = self._minimum_node(node.right)
+            # Node with two children: replace with successor
+            successor = self._get_minimum_node(node.right)
             node.timestamp = successor.timestamp
             node.key = successor.key
-            self.node_map[successor.key] = node
+            # Re-map the new key to this physical node reference
+            self.node_map[node.key] = node
             self._delete_node(successor)
 
-    def _minimum_node(self, node: BSTNode) -> BSTNode:
-        while node.left:
-            node = node.left
-        return node
-
-    def _replace_node(self, node: BSTNode, replacement):
+    def _replace_node(self, node: BSTNode, replacement: Optional[BSTNode]):
         if node.parent is None:
             self.root = replacement
         elif node == node.parent.left:
             node.parent.left = replacement
         else:
             node.parent.right = replacement
+            
         if replacement:
             replacement.parent = node.parent

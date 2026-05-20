@@ -6,7 +6,7 @@
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:14.946194          
+0        app_logs.txt         0        False    Occupied     18:07:01.599417          
 1        None                 None     False    Free         -                        
 2        None                 None     False    Free         -                        
 3        None                 None     False    Free         -                        
@@ -27,8 +27,8 @@ File: app_logs.txt
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:14.946194          
-1        user_db.bin          0        False    Occupied     16:10:14.958042          
+0        app_logs.txt         0        False    Occupied     18:07:01.599417          
+1        user_db.bin          0        False    Occupied     18:07:01.611330          
 2        None                 None     False    Free         -                        
 3        None                 None     False    Free         -                        
 4        None                 None     False    Free         -                        
@@ -52,9 +52,9 @@ File: user_db.bin
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:14.946194          
-1        user_db.bin          0        False    Occupied     16:10:14.958042          
-2        config.json          1        False    Occupied     16:10:14.969141          
+0        app_logs.txt         0        False    Occupied     18:07:01.599417          
+1        user_db.bin          0        False    Occupied     18:07:01.611330          
+2        config.json          1        False    Occupied     18:07:01.622561          
 3        None                 None     False    Free         -                        
 4        None                 None     False    Free         -                        
 
@@ -81,10 +81,10 @@ File: config.json
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:14.946194          
-1        user_db.bin          0        False    Occupied     16:10:14.958042          
-2        config.json          1        False    Occupied     16:10:14.969141          
-3        cache.dat            0        False    Occupied     16:10:14.979990          
+0        app_logs.txt         0        False    Occupied     18:07:01.599417          
+1        user_db.bin          0        False    Occupied     18:07:01.611330          
+2        config.json          1        False    Occupied     18:07:01.622561          
+3        cache.dat            0        False    Occupied     18:07:01.634346          
 4        None                 None     False    Free         -                        
 
 === 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
@@ -114,11 +114,11 @@ File: cache.dat
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:14.946194          
-1        user_db.bin          0        False    Occupied     16:10:14.958042          
-2        config.json          1        False    Occupied     16:10:14.969141          
-3        cache.dat            0        False    Occupied     16:10:14.979990          
-4        report.pdf           2        False    Occupied     16:10:14.991388          
+0        app_logs.txt         0        False    Occupied     18:07:01.599417          
+1        user_db.bin          0        False    Occupied     18:07:01.611330          
+2        config.json          1        False    Occupied     18:07:01.622561          
+3        cache.dat            0        False    Occupied     18:07:01.634346          
+4        report.pdf           2        False    Occupied     18:07:01.646209          
 
 === 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
 File: app_logs.txt
@@ -151,11 +151,11 @@ File: report.pdf
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:15.002048          
-1        user_db.bin          0        False    Occupied     16:10:14.958042          
-2        config.json          1        False    Occupied     16:10:14.969141          
-3        cache.dat            0        False    Occupied     16:10:14.979990          
-4        report.pdf           2        False    Occupied     16:10:14.991388          
+0        app_logs.txt         0        False    Occupied     18:07:01.658041          
+1        user_db.bin          0        False    Occupied     18:07:01.611330          
+2        config.json          1        False    Occupied     18:07:01.622561          
+3        cache.dat            0        False    Occupied     18:07:01.634346          
+4        report.pdf           2        False    Occupied     18:07:01.646209          
 
 === 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
 File: app_logs.txt
@@ -188,11 +188,11 @@ File: report.pdf
 === 1. PHYSICAL RAM (FRAME TABLE) ===
 Frame    File ID              Page     Dirty    Status       Last Access Time         
 -------------------------------------------------------------------------------------------------------------------
-0        app_logs.txt         0        False    Occupied     16:10:15.002048          
-1        user_db.bin          3        False    Occupied     16:10:15.012600          
-2        config.json          1        False    Occupied     16:10:14.969141          
-3        cache.dat            0        False    Occupied     16:10:14.979990          
-4        report.pdf           2        False    Occupied     16:10:14.991388          
+0        app_logs.txt         0        False    Occupied     18:07:01.658041          
+1        user_db.bin          3        False    Occupied     18:07:01.669781          
+2        config.json          1        False    Occupied     18:07:01.622561          
+3        cache.dat            0        False    Occupied     18:07:01.634346          
+4        report.pdf           2        False    Occupied     18:07:01.646209          
 
 === 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===
 File: app_logs.txt
