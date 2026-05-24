@@ -1,41 +1,34 @@
-# main.py
+import random
 import os
-import sys
-import time
 from physical_file import PhysicalFile
 from mmu import MMU
 
-def print_trace_header(access_num: int, filename: str, page: int, mode: str):
-    print("\n" + "="*95)
-    print(f" ACCESS #{access_num:<3} | File: {filename:<15} | Page: {page:<4} | Mode: {mode}")
-    print("="*95)
-
 if __name__ == "__main__":
-    log_file_path = "output.log"
-    sys.stdout = open(log_file_path, "w", encoding="utf-8")
+    sample_files = ["inventory.db", "video_meta.dat", "app_logs.txt"]
     
-    try:
-        # Initialize MMU without arguments (it pulls from constants.py)
-        mmu = MMU()
-        
-        logs   = PhysicalFile("app_logs.txt")
-        db     = PhysicalFile("user_db.bin")
-        cfg    = PhysicalFile("config.json")
-        cache  = PhysicalFile("cache.dat")
-        report = PhysicalFile("report.pdf")
+    # Create sample native files
+    for fname in sample_files:
+        if not os.path.exists(fname):
+            with open(fname, "wb") as f:
+                f.write(b"Sample native file data for MMU simulation.\n" * 800)
 
-        # Running the sequence
-        accesses = [(logs, 0), (db, 0), (cfg, 1), (cache, 0), (report, 2), (logs, 0), (db, 3)]
-        
-        for i, (f, p) in enumerate(accesses, 1):
-            print_trace_header(i, f.file_id, p, "READ")
-            mmu.access(f, p, "READ")
-            time.sleep(0.01)
-            mmu.dump()
+    mmu = MMU()
+    files = [PhysicalFile(f) for f in sample_files]
 
-    finally:
-        output_file = sys.stdout
-        sys.stdout = sys.__stdout__  
-        output_file.close()
-        
-        print(f"\n[SUCCESS] Simulation finalized! Logs in: {os.path.abspath(log_file_path)}")
+    TOTAL_ACCESSES = 120
+
+    print(f"MMU Simulation Started with {TOTAL_ACCESSES} accesses...\n")
+
+    for i in range(TOTAL_ACCESSES):
+        p_file = random.choice(files)
+        page = random.randint(0, min(200, p_file.num_pages - 1))
+        is_write = random.random() < 0.3
+
+        data = b"Updated data" if is_write else None
+        mmu.access(p_file, page, data)
+
+        if i % 30 == 0:
+            print(f"Access {i:3d} | Faults: {mmu.stats['faults']:3d} | Hits: {mmu.stats['hits']:3d}")
+
+    mmu.dump()
+    print(f"\nSimulation completed. Check output.log for detailed tables.")

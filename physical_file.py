@@ -1,27 +1,28 @@
-# physical_file.py
 import os
-from constants import PAGE_SIZE, TOTAL_PAGES
+from constants import PAGE_SIZE
 
 class PhysicalFile:
-    def __init__(self, filepath: str):
-        self.file_id = os.path.basename(filepath)
-        self.filepath = filepath
-        self.page_size = PAGE_SIZE
-        self.total_size = PAGE_SIZE * TOTAL_PAGES
-        
-        if not os.path.exists(filepath):
-            with open(filepath, "wb") as f:
-                f.write(b"\0" * self.total_size)
+    def __init__(self, filename: str):
+        self.file_id = filename
+        self.path = filename
+        if not os.path.exists(self.path):
+            raise FileNotFoundError(f"File '{self.path}' not found.")
+        self.size = os.path.getsize(self.path)
+        self.num_pages = (self.size + PAGE_SIZE - 1) // PAGE_SIZE
 
-    def read_page_data(self, page_idx: int) -> bytes:
-        offset = page_idx * self.page_size
-        with open(self.filepath, "rb") as f:
+    def read_page(self, page_idx: int) -> bytes:
+        if page_idx >= self.num_pages:
+            raise IndexError(f"Page {page_idx} out of range.")
+        offset = page_idx * PAGE_SIZE
+        with open(self.path, "rb") as f:
             f.seek(offset)
-            return f.read(self.page_size)
+            return f.read(PAGE_SIZE).ljust(PAGE_SIZE, b'\0')
 
-    def write_page_data(self, page_idx: int, data_bytes: bytes):
-        offset = page_idx * self.page_size
-        cleaned_data = data_bytes.ljust(self.page_size, b'\0')[:self.page_size]
-        with open(self.filepath, "r+b") as f:
+    def write_page(self, page_idx: int, data: bytes):
+        if page_idx >= self.num_pages:
+            raise IndexError(f"Page {page_idx} out of range.")
+        offset = page_idx * PAGE_SIZE
+        padded = data.ljust(PAGE_SIZE, b'\0')[:PAGE_SIZE]
+        with open(self.path, "r+b") as f:
             f.seek(offset)
-            f.write(cleaned_data)
+            f.write(padded)

@@ -1,80 +1,124 @@
 from datetime import datetime
+import sys
+from typing import Tuple
 from frame import Frame
-from page_table import PageDirectory 
-from constants import NUM_FRAMES
-from lru_bst import LRUBST  # Ensure this file is in the same directory
+from page_directory import PageDirectory
+from lru_bst import LRUBST
+from physical_file import PhysicalFile
+from constants import NUM_FRAMES, TLB_SIZE
 
 class MMU:
-    def __init__(self):
-        self.frames = [Frame(i) for i in range(NUM_FRAMES)]
-        self.lru_tree = LRUBST() # Tree to track access order
-        self.access_counter = 0
+    def __init__(self, num_frames: int = NUM_FRAMES):
+        self.frames: list[Frame] = [Frame(i) for i in range(num_frames)]
         self.page_directory = PageDirectory()
-        self.stats = {'hits': 0, 'faults': 0, 'writebacks': 0}
+        self.tlb: dict[Tuple[str, int], int] = {}
+        self.lru = LRUBST()
+        self.stats = {"hits": 0, "faults": 0, "tlb_hits": 0, "tlb_misses": 0, "writebacks": 0}
 
-    def access(self, file_obj, page_idx: int, mode: str = 'READ'):
-        self.access_counter += 1
-        current_real_time = datetime.now() # Use datetime object for accurate sorting
-        file_id = str(file_obj.file_id) if hasattr(file_obj, 'file_id') else str(file_obj)
-        
-        pte = self.page_directory.get(file_id, page_idx)
+        # Redirect output to output.log
+        self.log_file = open("output.log", "w", encoding="utf-8")
+        sys.stdout = self.log_file
 
-        # Hit: Update timestamp in frame and the BST
-        if pte is not None:
-            self.stats['hits'] += 1
-            frame = self.frames[pte.frame_idx]
-            frame.timestamp = current_real_time.strftime("%H:%M:%S.%f")
-            self.lru_tree.insert((file_id, page_idx), current_real_time)
-            if mode == 'WRITE':
-                frame.dirty = True
-                pte.dirty = True
-            return
+    def access(self, p_file: PhysicalFile, page_idx: int, write_data: bytes = None):
+        key: Tuple[str, int] = (p_file.file_id, page_idx)
+        now = datetime.now()
 
-        self.stats['faults'] += 1
-        
-        # Scenario A: Free Frame
+        # TLB Lookup
+        if key in self.tlb:
+            self.stats["tlb_hits"] += 1
+            self.stats["hits"] += 1
+            frame_idx = self.tlb[key]
+        else:
+            self.stats["tlb_misses"] += 1
+            # Use table_idx to select which Page Table to use
+            table_idx = page_idx // 32
+            inner_idx = page_idx % 32
+
+            entry = self.page_directory.get(table_idx, inner_idx)
+            if entry:
+                self.stats["hits"] += 1
+                frame_idx = entry.frame_idx
+                self.tlb[key] = frame_idx
+            else:
+                self.stats["faults"] += 1
+                frame = self._evict_or_get_free()
+                frame_idx = frame.idx
+
+                frame.data = p_file.read_page(page_idx)
+                frame.p_file = p_file
+                frame.dirty = False
+
+                self.page_directory.map(table_idx, inner_idx, frame_idx, now)
+                self.tlb[key] = frame_idx
+
+        # Update LRU with current timestamp
+        self.lru.insert(key, now)
+
+        frame = self.frames[frame_idx]
+        if write_data:
+            frame.data = write_data
+            frame.dirty = True
+
+        return frame.data
+
+    def _evict_or_get_free(self) -> Frame:
+        # Find free frame
         for frame in self.frames:
-            if frame.file_id is None:
-                self._map_to_frame(frame, file_obj, file_id, page_idx, mode, current_real_time)
-                return
+            if frame.p_file is None:
+                return frame
 
-        # Scenario B: Eviction (using BST)
-        victim_key = self.lru_tree.remove_oldest()
-        victim_frame = next(f for f in self.frames if (f.file_id, f.page_idx) == victim_key)
-        
-        if victim_frame.dirty:
-            self.stats['writebacks'] += 1
-            if hasattr(file_obj, 'write_page_data'):
-                file_obj.write_page_data(victim_frame.page_idx, victim_frame.data)
+        # LRU Eviction
+        victim_key = self.lru.remove_oldest()
+        if not victim_key:
+            raise RuntimeError("No frames available")
 
-        self.page_directory.unmap(victim_frame.file_id, victim_frame.page_idx)
-        self._map_to_frame(victim_frame, file_obj, file_id, page_idx, mode, current_real_time)
+        v_file, v_page = victim_key
+        table_idx = v_page // 32
+        inner_idx = v_page % 32
 
-    def _map_to_frame(self, frame, file_obj, file_id, page_idx, mode, timestamp):
-        frame.file_id = file_id
-        frame.page_idx = page_idx
-        frame.timestamp = timestamp.strftime("%H:%M:%S.%f")
-        frame.dirty = (mode == 'WRITE')
-        if hasattr(file_obj, 'read_page_data'):
-            frame.data = file_obj.read_page_data(page_idx)
-        
-        self.page_directory.map(file_id, page_idx, frame.idx, timestamp)
-        self.lru_tree.insert((file_id, page_idx), timestamp)
+        entry = self.page_directory.get(table_idx, inner_idx)
+        frame_idx = entry.frame_idx if entry else 0
+        frame = self.frames[frame_idx]
+
+        if frame.dirty and frame.p_file:
+            self.stats["writebacks"] += 1
+            frame.p_file.write_page(v_page, frame.data)
+
+        self.tlb.pop(victim_key, None)
+        self.page_directory.unmap(table_idx, inner_idx)
+        frame.clear()
+
+        return frame
+
     def dump(self):
-        print("\n=== 1. PHYSICAL RAM (FRAME TABLE) ===")
-        print(f"{'Frame':<8} {'File ID':<20} {'Page':<8} {'Dirty':<8} {'Status':<12} {'Last Access Time':<25}")
-        print("-" * 115)
-        for frame in self.frames:
-            status = "Occupied" if frame.file_id else "Free"
-            print(f"{frame.idx:<8} {str(frame.file_id):<20} {str(frame.page_idx):<8} {str(frame.dirty):<8} {status:<12} {str(frame.timestamp):<25}")
-        print("\n=== 2. THREE-LEVEL PAGE TABLE HIERARCHICAL TREE ===")
-        # We iterate through the root directory (files)
-        for file_id, level1 in self.page_directory.files.items():
-            print(f"File: {file_id}")
-            for l1_idx, level2 in level1.level2.items():
-                print(f"  ├── Level 1 [{l1_idx}]")
-                for l2_idx, level3 in level2.level3.items():
-                    print(f"  │    └── Level 2 [{l2_idx}]")
-                    for l3_idx, pte in level3.entries.items():
-                        print(f"  │          └── Level 3 [{l3_idx}] ──► Frame [{pte.frame_idx}]")
-        print("==========================================================================================\n")
+        print("\n" + "="*90)
+        print("MMU SIMULATION FINAL STATE")
+        print("="*90)
+
+        print("\n1. FRAME TABLE")
+        print("-" * 70)
+        print(f"{'Frame':<6} {'File ID':<20} {'Page':<8} {'Dirty':<6} Status")
+        print("-" * 70)
+        for f in self.frames:
+            if f.p_file:
+                print(f"{f.idx:<6} {f.p_file.file_id:<20} {f.idx:<8} {f.dirty:<6} Occupied")
+            else:
+                print(f"{f.idx:<6} {'-':<20} {'-':<8} False   Free")
+
+        print("\n2. PAGE DIRECTORY SUMMARY")
+        print("-" * 70)
+        summary = self.page_directory.get_summary()
+        for table_idx, count in summary.items():
+            print(f"Page Table {table_idx:<5} → {count} pages mapped")
+
+        print("\n3. STATISTICS")
+        print("-" * 70)
+        total = self.stats['hits'] + self.stats['faults']
+        hit_ratio = (self.stats['hits'] / total * 100) if total > 0 else 0
+        print(f"Total Accesses   : {total}")
+        print(f"Page Hits        : {self.stats['hits']}")
+        print(f"Page Faults      : {self.stats['faults']}")
+        print(f"Hit Ratio        : {hit_ratio:.2f}%")
+        print(f"TLB Hits         : {self.stats['tlb_hits']}")
+        print(f"Writebacks       : {self.stats['writebacks']}")
+        print("="*90)
