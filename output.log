@@ -1,53 +1,38 @@
-MMU Simulation Started with 120 accesses...
+MMU Simulation — 10 accesses across 3 file(s)
 
-Access   0 | Faults:   1 | Hits:   0
-Access  30 | Faults:  30 | Hits:   1
-Access  60 | Faults:  58 | Hits:   3
-Access  90 | Faults:  85 | Hits:   6
+  Access   0  |  Faults:   1  Hits:   0  TLB hits:   0
+  Access   5  |  Faults:   5  Hits:   1  TLB hits:   1
 
-==========================================================================================
-MMU SIMULATION FINAL STATE
-==========================================================================================
+================================================================================
+MMU SIMULATION — FINAL STATE
+================================================================================
 
-1. FRAME TABLE
-----------------------------------------------------------------------
-Frame  File ID              Page     Dirty  Status
-----------------------------------------------------------------------
-0      video_meta.dat       0        1      Occupied
-1      inventory.db         1        1      Occupied
-2      inventory.db         2        0      Occupied
-3      app_logs.txt         3        0      Occupied
-4      app_logs.txt         4        0      Occupied
-5      video_meta.dat       5        0      Occupied
-6      video_meta.dat       6        0      Occupied
-7      inventory.db         7        1      Occupied
-8      inventory.db         8        0      Occupied
-9      video_meta.dat       9        0      Occupied
-10     app_logs.txt         10       0      Occupied
-11     app_logs.txt         11       0      Occupied
-12     video_meta.dat       12       0      Occupied
-13     video_meta.dat       13       0      Occupied
-14     video_meta.dat       14       0      Occupied
-15     app_logs.txt         15       0      Occupied
+── FRAME TABLE ─────────────────────────────────────────────────────────────────
+Frame   Status     File                     VPN    Dirty
+────────────────────────────────────────────────────────────
+0       occupied   inventory.db             0      False
+1       occupied   inventory.db             8      False
+2       occupied   app_logs.txt             2      True
+3       occupied   inventory.db             3      False
 
-2. PAGE DIRECTORY SUMMARY
-----------------------------------------------------------------------
-Page Table 1     → 4 pages mapped
-Page Table 3     → 2 pages mapped
-Page Table 6     → 1 pages mapped
-Page Table 2     → 4 pages mapped
-Page Table 0     → 2 pages mapped
-Page Table 4     → 1 pages mapped
-Page Table 5     → 3 pages mapped
+── PAGE DIRECTORY SUMMARY ──────────────────────────────────────────────────────
+  L1[0] → L2[0] : 4 page(s) mapped
 
-3. STATISTICS
-----------------------------------------------------------------------
-Total Accesses   : 120
-Page Hits        : 8
-Page Faults      : 112
-Hit Ratio        : 6.67%
-TLB Hits         : 3
-Writebacks       : 28
-==========================================================================================
+  Total mapped : 4 page(s)
 
-Simulation completed. Check output.log for detailed tables.
+── TLB STATE ───────────────────────────────────────────────────────────────────
+  (inventory.db, vpn=   8)  →  frame 1
+  (inventory.db, vpn=   3)  →  frame 3
+  (inventory.db, vpn=   0)  →  frame 0
+  (app_logs.txt, vpn=   2)  →  frame 2
+
+── STATISTICS ──────────────────────────────────────────────────────────────────
+  Total accesses  : 10
+  Page hits       : 1
+  Page faults     : 9
+  Hit ratio       : 10.0%
+  TLB hits        : 1  (10.0%)
+  TLB misses      : 9
+  Writebacks      : 2
+  LRU tree size   : 4
+================================================================================

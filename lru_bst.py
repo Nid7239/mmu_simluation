@@ -1,112 +1,202 @@
-from datetime import datetime
-from typing import Optional, Tuple, Dict
+"""
+lru_bst.py
+==========
+AVL-balanced binary search tree for O(log n) LRU tracking.
 
-class BSTNode:
-    def __init__(self, key: Tuple[str, int], timestamp: datetime):
-        self.key = key
-        self.timestamp = timestamp
-        self.left = None
-        self.right = None
-        self.parent = None
-        self.height = 1
+Nodes are ordered by last-access timestamp.  The leftmost node (minimum
+timestamp) is always the least-recently-used entry — remove_oldest()
+finds and deletes it in O(log n).
+
+Each access updates the node for its key: the old node is deleted and a
+new one re-inserted with the current timestamp, keeping the BST ordering
+invariant correct.
+
+A companion dict (_ts_map) gives O(1) key → timestamp lookup so that
+re-insertions and targeted removals do not require a tree search.
+"""
+
+from __future__ import annotations
+from datetime import datetime
+from typing import Optional
+
+
+# ---------------------------------------------------------------------------
+#  Internal node
+# ---------------------------------------------------------------------------
+
+class _Node:
+    __slots__ = ("key", "ts", "left", "right", "height")
+
+    def __init__(self, key: tuple[str, int], ts: datetime) -> None:
+        self.key:    tuple[str, int]  = key
+        self.ts:     datetime         = ts
+        self.left:   Optional[_Node]  = None
+        self.right:  Optional[_Node]  = None
+        self.height: int              = 1
+
+
+# ---------------------------------------------------------------------------
+#  AVL helpers
+# ---------------------------------------------------------------------------
+
+def _height(n: Optional[_Node]) -> int:
+    return n.height if n else 0
+
+
+def _update_height(n: _Node) -> None:
+    n.height = 1 + max(_height(n.left), _height(n.right))
+
+
+def _balance_factor(n: _Node) -> int:
+    return _height(n.left) - _height(n.right)
+
+
+def _rotate_right(y: _Node) -> _Node:
+    x       = y.left
+    y.left  = x.right
+    x.right = y
+    _update_height(y)
+    _update_height(x)
+    return x
+
+
+def _rotate_left(x: _Node) -> _Node:
+    y       = x.right
+    x.right = y.left
+    y.left  = x
+    _update_height(x)
+    _update_height(y)
+    return y
+
+
+def _rebalance(n: _Node) -> _Node:
+    _update_height(n)
+    bf = _balance_factor(n)
+
+    if bf > 1:                        # left-heavy
+        if _balance_factor(n.left) < 0:
+            n.left = _rotate_left(n.left)    # Left-Right case
+        return _rotate_right(n)
+
+    if bf < -1:                       # right-heavy
+        if _balance_factor(n.right) > 0:
+            n.right = _rotate_right(n.right) # Right-Left case
+        return _rotate_left(n)
+
+    return n
+
+
+# ---------------------------------------------------------------------------
+#  BST insert / delete
+# ---------------------------------------------------------------------------
+
+def _insert(root: Optional[_Node], node: _Node) -> _Node:
+    if root is None:
+        return node
+    if node.ts <= root.ts:
+        root.left  = _insert(root.left,  node)
+    else:
+        root.right = _insert(root.right, node)
+    return _rebalance(root)
+
+
+def _min_node(n: _Node) -> _Node:
+    while n.left:
+        n = n.left
+    return n
+
+
+def _delete(
+    root: Optional[_Node],
+    key:  tuple[str, int],
+    ts:   datetime,
+) -> Optional[_Node]:
+    """Delete the node whose (key, ts) matches exactly."""
+    if root is None:
+        return None
+
+    if ts < root.ts:
+        root.left  = _delete(root.left,  key, ts)
+    elif ts > root.ts:
+        root.right = _delete(root.right, key, ts)
+    else:
+        # Timestamp matches — confirm by key (handles duplicate timestamps)
+        if root.key == key:
+            if root.left is None:
+                return root.right
+            if root.right is None:
+                return root.left
+            # Two children: replace with in-order successor
+            succ       = _min_node(root.right)
+            root.key   = succ.key
+            root.ts    = succ.ts
+            root.right = _delete(root.right, succ.key, succ.ts)
+        else:
+            # Same timestamp, different key — search both subtrees
+            root.left  = _delete(root.left,  key, ts)
+            root.right = _delete(root.right, key, ts)
+
+    return _rebalance(root)
+
+
+# ---------------------------------------------------------------------------
+#  Public class
+# ---------------------------------------------------------------------------
 
 class LRUBST:
-    def __init__(self):
-        self.root = None
-        self.node_map: Dict[Tuple[str, int], BSTNode] = {}
+    """
+    AVL-balanced BST that tracks least-recently-used (key, timestamp) pairs.
 
-    # Height and Balance
-    def _height(self, node):
-        return node.height if node else 0
+    Keys are (file_id, vpn) tuples.  The oldest entry (smallest timestamp)
+    is always retrievable in O(log n) via remove_oldest().
+    """
 
-    def _update_height(self, node):
-        if node:
-            node.height = 1 + max(self._height(node.left), self._height(node.right))
+    def __init__(self) -> None:
+        self._root:   Optional[_Node]                        = None
+        self._ts_map: dict[tuple[str, int], datetime]        = {}
 
-    def _balance_factor(self, node):
-        return self._height(node.left) - self._height(node.right)
+    # ------------------------------------------------------------------
 
-    def _right_rotate(self, y):
-        x = y.left
-        t2 = x.right
-        x.right = y
-        y.left = t2
-        if t2: t2.parent = y
-        x.parent = y.parent
-        y.parent = x
-        self._update_height(y)
-        self._update_height(x)
-        return x
+    def touch(self, key: tuple[str, int], ts: datetime) -> None:
+        """
+        Record an access for *key* at time *ts*.
 
-    def _left_rotate(self, x):
-        y = x.right
-        t2 = y.left
-        y.left = x
-        x.right = t2
-        if t2: t2.parent = x
-        y.parent = x.parent
-        x.parent = y
-        self._update_height(x)
-        self._update_height(y)
-        return y
+        If the key is already tracked, the old node is removed before
+        re-insertion so the BST ordering stays correct.
+        """
+        if key in self._ts_map:
+            self._root = _delete(self._root, key, self._ts_map[key])
 
-    def _balance(self, node):
-        if not node:
-            return node
-        self._update_height(node)
-        bf = self._balance_factor(node)
+        node       = _Node(key, ts)
+        self._root = _insert(self._root, node)
+        self._ts_map[key] = ts
 
-        if bf > 1:
-            if self._balance_factor(node.left) < 0:
-                node.left = self._left_rotate(node.left)
-            return self._right_rotate(node)
-        if bf < -1:
-            if self._balance_factor(node.right) > 0:
-                node.right = self._right_rotate(node.right)
-            return self._left_rotate(node)
-        return node
+    def remove_oldest(self) -> Optional[tuple[str, int]]:
+        """
+        Remove and return the key with the smallest (oldest) timestamp.
 
-    def insert(self, key: Tuple[str, int], timestamp: datetime):
-        if key in self.node_map:
-            self._delete_node(self.node_map[key])
-        node = BSTNode(key, timestamp)
-        self.node_map[key] = node
-        self.root = self._insert_bst(self.root, node)
-        self.root = self._balance(self.root)
-
-    def _insert_bst(self, root, node):
-        if not root:
-            return node
-        if node.timestamp < root.timestamp:
-            root.left = self._insert_bst(root.left, node)
-            if root.left: root.left.parent = root
-        else:
-            root.right = self._insert_bst(root.right, node)
-            if root.right: root.right.parent = root
-        return self._balance(root)
-
-    def remove_oldest(self):
-        if not self.root:
+        Returns None if the tracker is empty.
+        """
+        if self._root is None:
             return None
-        key = self._get_oldest_key()
-        self._delete_node(self.node_map[key])
-        del self.node_map[key]
-        if self.root:
-            self.root = self._balance(self.root)
+
+        oldest = _min_node(self._root)
+        key, ts = oldest.key, oldest.ts
+        self._root = _delete(self._root, key, ts)
+        del self._ts_map[key]
         return key
 
-    def _get_oldest_key(self):
-        curr = self.root
-        while curr and curr.left:
-            curr = curr.left
-        return curr.key
+    def remove(self, key: tuple[str, int]) -> None:
+        """Explicitly evict *key* (called when a page is unmapped externally)."""
+        if key not in self._ts_map:
+            return
+        ts = self._ts_map.pop(key)
+        self._root = _delete(self._root, key, ts)
 
-    def _delete_node(self, node):
-        if node.parent is None:
-            self.root = None
-        elif node == node.parent.left:
-            node.parent.left = None
-        else:
-            node.parent.right = None
-        if self.root:
-            self.root = self._balance(self.root)
+    # ------------------------------------------------------------------
+
+    def __len__(self) -> int:
+        return len(self._ts_map)
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._ts_map
