@@ -1,4 +1,4 @@
-"""
+r"""
 page_directory.py
 =================
 Multi-level page table hierarchy matching this diagram:
@@ -73,6 +73,47 @@ class L1PageTable:
         if tbl is not None and tbl.is_empty:
             self._l2_tables[l2_idx] = None
 
+    # ------------------------------------------------------------------
+    #  L2 routing — ONLY L1 knows how to pick its own L2 table.
+    #  The PageDirectory never computes this and never calls L2.
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _split_l2(vpn: int) -> int:
+        """Extract the L2 index (bits 6-5) from the VPN."""
+        return ((vpn >> SLOT_BITS) & ((1 << L2_BITS) - 1)) % PAGE_TABLES_L2
+
+    # ------------------------------------------------------------------
+    #  Delegated operations — the directory calls these on L1 only.
+    #  L1 owns the L2 lookup/creation and the call into L2.
+    # ------------------------------------------------------------------
+
+    def lookup(self, file_id: str, vpn: int) -> Optional[PageTableEntry]:
+        """Directory → L1.lookup → L2.get → entry."""
+        l2 = self.get_l2(self._split_l2(vpn))
+        return l2.get(file_id, vpn) if l2 is not None else None
+
+    def insert(
+        self,
+        file_id:   str,
+        vpn:       int,
+        frame_idx: int,
+        timestamp: datetime,
+    ) -> PageTableEntry:
+        """Directory → L1.insert → L2.map (allocates the L2 on first use)."""
+        l2 = self.get_or_create_l2(self._split_l2(vpn))
+        return l2.map(file_id, vpn, frame_idx, timestamp)
+
+    def remove(self, file_id: str, vpn: int) -> Optional[PageTableEntry]:
+        """Directory → L1.remove → L2.unmap, then prune the L2 if empty."""
+        l2_idx = self._split_l2(vpn)
+        l2 = self.get_l2(l2_idx)
+        if l2 is None:
+            return None
+        entry = l2.unmap(file_id, vpn)
+        self.prune_l2_if_empty(l2_idx)
+        return entry
+
     @property
     def is_empty(self) -> bool:
         return all(t is None or t.is_empty for t in self._l2_tables)
@@ -111,21 +152,31 @@ class PageDirectory:
 
     # ------------------------------------------------------------------
     #  VPN bit-splitting
+    #
+    #  The directory ONLY knows how to extract its own level's index
+    #  (l1_idx, bit 7).  It does NOT compute l2_idx — that is L1's job.
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _split_vpn(vpn: int) -> tuple[int, int]:
+    def _split_l1(vpn: int) -> int:
+        """Extract the L1 index (bit 7) from the VPN — the only bit the directory reads."""
+        return ((vpn >> (L2_BITS + SLOT_BITS)) & ((1 << L1_BITS) - 1)) % PAGE_TABLES_L1
+
+    @staticmethod
+    def decode_route(vpn: int) -> tuple[int, int]:
         """
-        Split vpn into (l1_idx, l2_idx).
+        Decode (l1_idx, l2_idx) for TRACING / REPORTING only.
+
+        This is a read-only display helper for the trace log — it is NOT
+        used during traversal. Real traversal asks each level for its own
+        index: the directory uses _split_l1, L1 uses _split_l2.
 
         Example: vpn=70 → binary=01000110
           bit 7     = 0  → L1_Table_0
           bits 6-5  = 10 → L2_T2
-          bits 4-0  = 00110 → slot (routing only)
+          bits 4-0  = 00110 → slot (not used for table routing)
         """
-        l1_idx = (vpn >> (L2_BITS + SLOT_BITS)) & ((1 << L1_BITS) - 1)
-        l2_idx = (vpn >> SLOT_BITS)             & ((1 << L2_BITS) - 1)
-        return l1_idx % PAGE_TABLES_L1, l2_idx % PAGE_TABLES_L2
+        return PageDirectory._split_l1(vpn), L1PageTable._split_l2(vpn)
 
     # ------------------------------------------------------------------
     #  Internal — PageDirectory only touches _l1_tables array
@@ -147,23 +198,13 @@ class PageDirectory:
         """
         Look up entry for (file_id, vpn).
 
-        Traversal (strict — no level skipping):
-          PageDirectory → L1_Table[l1_idx] → L2_T[l2_idx] → entry
+        Strict hierarchy — the directory only ever calls an L1 method:
+          PageDirectory → L1.lookup → (L1 internally) L2.get → entry
         """
-        l1_idx, l2_idx = self._split_vpn(vpn)
-
-        # Step 1: Directory → L1 only
-        l1 = self._get_l1(l1_idx)
+        l1 = self._get_l1(self._split_l1(vpn))
         if l1 is None:
             return None
-
-        # Step 2: L1 → L2 only (directory never does this step)
-        l2 = l1.get_l2(l2_idx)
-        if l2 is None:
-            return None
-
-        # Step 3: L2 → entry
-        return l2.get(file_id, vpn)
+        return l1.lookup(file_id, vpn)
 
     def map(
         self,
@@ -174,41 +215,30 @@ class PageDirectory:
     ) -> PageTableEntry:
         """
         Insert mapping (file_id, vpn) → frame_idx.
-        Allocates L1 and L2 on demand.
 
-        Traversal:
-          PageDirectory → L1_Table[l1_idx] → L2_T[l2_idx] → map
+        Strict hierarchy:
+          PageDirectory → L1.insert → (L1 internally) L2.map
+        The directory allocates the L1 on demand; L1 allocates its own L2.
         """
-        l1_idx, l2_idx = self._split_vpn(vpn)
-
-        # Step 1: Directory → L1
-        l1 = self._get_or_create_l1(l1_idx)
-
-        # Step 2: L1 → L2
-        l2 = l1.get_or_create_l2(l2_idx)
-
-        # Step 3: L2 → create entry
-        return l2.map(file_id, vpn, frame_idx, timestamp)
+        l1 = self._get_or_create_l1(self._split_l1(vpn))
+        return l1.insert(file_id, vpn, frame_idx, timestamp)
 
     def unmap(self, file_id: str, vpn: int) -> Optional[PageTableEntry]:
         """
         Remove mapping for (file_id, vpn).
-        Prunes empty tables bottom-up.
-        """
-        l1_idx, l2_idx = self._split_vpn(vpn)
 
+        Strict hierarchy:
+          PageDirectory → L1.remove → (L1 internally) L2.unmap + prune L2
+        The directory then prunes the L1 itself if it has gone empty.
+        """
+        l1_idx = self._split_l1(vpn)
         l1 = self._get_l1(l1_idx)
         if l1 is None:
             return None
 
-        l2 = l1.get_l2(l2_idx)
-        if l2 is None:
-            return None
+        entry = l1.remove(file_id, vpn)
 
-        entry = l2.unmap(file_id, vpn)
-
-        # Prune bottom-up: L2 first, then L1
-        l1.prune_l2_if_empty(l2_idx)
+        # Directory only prunes its OWN level (L1); L1 already pruned its L2.
         if l1.is_empty:
             self._l1_tables[l1_idx] = None
 

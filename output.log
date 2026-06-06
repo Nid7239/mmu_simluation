@@ -1,7 +1,8 @@
-MMU Simulation — 10 accesses across 3 file(s)
+MMU Simulation - 12 accesses across 3 file(s)
 
   Access   0  |  Faults:   1  Hits:   0  TLB hits:   0
-  Access   5  |  Faults:   5  Hits:   1  TLB hits:   1
+  Access   5  |  Faults:   6  Hits:   0  TLB hits:   0
+  Access  10  |  Faults:  10  Hits:   1  TLB hits:   1
 
 ================================================================================
 MMU SIMULATION — FINAL STATE
@@ -10,29 +11,31 @@ MMU SIMULATION — FINAL STATE
 ── FRAME TABLE ─────────────────────────────────────────────────────────────────
 Frame   Status     File                     VPN    Dirty
 ────────────────────────────────────────────────────────────
-0       occupied   app_logs.txt             4      True
-1       occupied   inventory.db             8      False
-2       occupied   app_logs.txt             2      False
-3       occupied   inventory.db             1      True
+0       occupied   inventory.db             70     False
+1       occupied   app_logs.txt             200    False
+2       occupied   app_logs.txt             0      False
+3       occupied   inventory.db             0      False
 
 ── PAGE DIRECTORY SUMMARY ──────────────────────────────────────────────────────
-  L1[0] → L2[0] : 4 page(s) mapped
+  L1[0] → L2[0] : 2 page(s) mapped
+  L1[0] → L2[2] : 1 page(s) mapped
+  L1[1] → L2[2] : 1 page(s) mapped
 
   Total mapped : 4 page(s)
 
 ── TLB STATE ───────────────────────────────────────────────────────────────────
-  (inventory.db, vpn=   8)  →  frame 1
-  (inventory.db, vpn=   1)  →  frame 3
-  (app_logs.txt, vpn=   2)  →  frame 2
-  (app_logs.txt, vpn=   4)  →  frame 0
+  (app_logs.txt, vpn=   0)  →  frame 2
+  (app_logs.txt, vpn= 200)  →  frame 1
+  (inventory.db, vpn=   0)  →  frame 3
+  (inventory.db, vpn=  70)  →  frame 0
 
 ── STATISTICS ──────────────────────────────────────────────────────────────────
-  Total accesses  : 10
-  Page hits       : 1
-  Page faults     : 9
-  Hit ratio       : 10.0%
-  TLB hits        : 1  (10.0%)
-  TLB misses      : 9
-  Writebacks      : 0
+  Total accesses  : 12
+  Page hits       : 2
+  Page faults     : 10
+  Hit ratio       : 16.7%
+  TLB hits        : 2  (16.7%)
+  TLB misses      : 10
+  Writebacks      : 2
   LRU tree size   : 4
 ================================================================================

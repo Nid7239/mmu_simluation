@@ -60,10 +60,9 @@ class MMU:
 
     def access(
         self,
-        p_file:     PhysicalFile,
-        vpn:        int,
-        write_data: Optional[bytes] = None,
-    ) -> bytes:
+        p_file:PhysicalFile,
+        vpn:int,
+        write_data: Optional[bytes] = None,) -> bytes:
         """
         Access virtual page *vpn* of *p_file*.
 
@@ -95,7 +94,7 @@ class MMU:
 
         # Emit a trace record if tracing is enabled
         if self._tracer is not None:
-            l1_idx, l2_idx = self.page_directory._split_vpn(vpn)
+            l1_idx, l2_idx = self.page_directory.decode_route(vpn)
             entry = self.page_directory.get(p_file.file_id, vpn)
             dirty_after = entry.dirty if entry else False
 
@@ -237,10 +236,6 @@ class MMU:
 
         return frame
 
-    # ------------------------------------------------------------------
-    #  Writeback (dirty page → disk)
-    # ------------------------------------------------------------------
-
     def _writeback(self, entry: PageTableEntry, frame: Frame) -> None:
         """Flush a dirty frame back to the file it was loaded from."""
         if self._tracer is not None:
@@ -259,11 +254,6 @@ class MMU:
                 file=sys.stderr,
             )
 
-    # ------------------------------------------------------------------
-    #  Trace helper — attach PTE snapshot data directly onto Frame objects
-    #  so TraceLogger.log_frame_snapshot() can read them without importing
-    #  PageDirectory.
-    # ------------------------------------------------------------------
 
     def _attach_snap_data(self) -> None:
         """Stamp each Frame with current PTE metadata for the snapshot printer."""
@@ -276,7 +266,7 @@ class MMU:
             elif hasattr(frame, "_snap_file"):
                 del frame._snap_file                 # type: ignore[attr-defined]
 
-    # ------------------------------------------------------------------
+  
     #  Reporting (output.log)
     # ------------------------------------------------------------------
 
@@ -346,10 +336,6 @@ class MMU:
             return None
         file_id, vpn = key
         return self.page_directory.get(file_id, vpn)
-
-    # ------------------------------------------------------------------
-    #  Lifecycle
-    # ------------------------------------------------------------------
 
     def close(self) -> None:
         """Flush and close all log files, restoring stdout."""

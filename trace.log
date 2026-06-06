@@ -1,194 +1,127 @@
-================================================================================
-MMU INTERNAL TRACE LOG
-Started : 2026-06-06  09:29:59
-================================================================================
-
-[   1]  09:29:59.402  READ   app_logs.txt  vpn=5
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 0 allocated
-        Page table updated: L1[0] → L2[0] → frame 0
-        TLB updated with new entry
-        Resolved to frame 0  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      False
-  1       free       -                      -      -
-  2       free       -                      -      -
-  3       free       -                      -      -
-
-[   2]  09:29:59.402  READ   inventory.db  vpn=4
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 1 allocated
-        Page table updated: L1[0] → L2[0] → frame 1
-        TLB updated with new entry
-        Resolved to frame 1  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           4      False
-  2       free       -                      -      -
-  3       free       -                      -      -
-
-[   3]  09:29:59.403  READ   app_logs.txt  vpn=6
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 2 allocated
-        Page table updated: L1[0] → L2[0] → frame 2
-        TLB updated with new entry
-        Resolved to frame 2  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           4      False
-  2       occupied   app_logs.txt           6      False
-  3       free       -                      -      -
-
-[   4]  09:29:59.403  READ   app_logs.txt  vpn=6
-        VPN split  →  L1[0]  →  L2[0]
-        TLB HIT    →  frame 2  (no page-table walk needed)
-        Resolved to frame 2  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           4      False
-  2       occupied   app_logs.txt           6      False
-  3       free       -                      -      -
-
-[   5]  09:29:59.404  READ   app_logs.txt  vpn=2
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 3 allocated
-        Page table updated: L1[0] → L2[0] → frame 3
-        TLB updated with new entry
-        Resolved to frame 3  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           4      False
-  2       occupied   app_logs.txt           6      False
-  3       occupied   app_logs.txt           2      False
-
-        EVICT  frame 0  (app_logs.txt  vpn=5)  (clean)
-               to make room for  (inventory.db  vpn=3)
-[   6]  09:29:59.405  READ   inventory.db  vpn=3
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 0 allocated
-        Page table updated: L1[0] → L2[0] → frame 0
-        TLB updated with new entry
-        Resolved to frame 0  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           3      False
-  1       occupied   inventory.db           4      False
-  2       occupied   app_logs.txt           6      False
-  3       occupied   app_logs.txt           2      False
-
-        EVICT  frame 1  (inventory.db  vpn=4)  (clean)
-               to make room for  (inventory.db  vpn=8)
-[   7]  09:29:59.405  READ   inventory.db  vpn=8
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 1 allocated
-        Page table updated: L1[0] → L2[0] → frame 1
-        TLB updated with new entry
-        Resolved to frame 1  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           3      False
-  1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           6      False
-  3       occupied   app_logs.txt           2      False
-
-        EVICT  frame 3  (app_logs.txt  vpn=2)  (clean)
-               to make room for  (inventory.db  vpn=1)
-[   8]  09:29:59.406  WRITE  inventory.db  vpn=1
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 3 allocated
-        Page table updated: L1[0] → L2[0] → frame 3
-        TLB updated with new entry
-        Write applied  →  dirty bit SET on PTE
-        Resolved to frame 3  (dirty=True)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           3      False
-  1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           6      False
-  3       occupied   inventory.db           1      True
-
-        EVICT  frame 2  (app_logs.txt  vpn=6)  (clean)
-               to make room for  (app_logs.txt  vpn=2)
-[   9]  09:29:59.407  READ   app_logs.txt  vpn=2
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 2 allocated
-        Page table updated: L1[0] → L2[0] → frame 2
-        TLB updated with new entry
-        Resolved to frame 2  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           3      False
-  1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           2      False
-  3       occupied   inventory.db           1      True
-
-        EVICT  frame 0  (inventory.db  vpn=3)  (clean)
-               to make room for  (app_logs.txt  vpn=4)
-[  10]  09:29:59.407  WRITE  app_logs.txt  vpn=4
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 0 allocated
-        Page table updated: L1[0] → L2[0] → frame 0
-        TLB updated with new entry
-        Write applied  →  dirty bit SET on PTE
-        Resolved to frame 0  (dirty=True)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           4      True
-  1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           2      False
-  3       occupied   inventory.db           1      True
-
-================================================================================
-TRACE COMPLETE — FINAL STATISTICS
-================================================================================
-  Total accesses : 10
-  Page hits      : 1  (10.0%)
-  Page faults    : 9
-  TLB hits       : 1  (10.0%)
-  TLB misses     : 9
-  Writebacks     : 0
-================================================================================
+MMU INTERNAL TRACE
+Block order: eviction/writeback (if any) -> access -> frame snapshot
+Routing shown as L1[i] -> L2[j] through the multi-level page table
+------------------------------------------------------------------------------
+ACCESS #1   READ  video_meta.dat   vpn=40
+            route : L1[0] -> L2[1]
+            result: PAGE_FAULT frame 0  dirty=False
+            frames:
+              [0] video_meta.dat vpn=40 dirty=False
+              [1] free
+              [2] free
+              [3] free
+------------------------------------------------------------------------------
+ACCESS #2   READ  inventory.db     vpn=0
+            route : L1[0] -> L2[0]
+            result: PAGE_FAULT frame 1  dirty=False
+            frames:
+              [0] video_meta.dat vpn=40 dirty=False
+              [1] inventory.db vpn=0 dirty=False
+              [2] free
+              [3] free
+------------------------------------------------------------------------------
+ACCESS #3   READ  inventory.db     vpn=70
+            route : L1[0] -> L2[2]
+            result: PAGE_FAULT frame 2  dirty=False
+            frames:
+              [0] video_meta.dat vpn=40 dirty=False
+              [1] inventory.db vpn=0 dirty=False
+              [2] inventory.db vpn=70 dirty=False
+              [3] free
+------------------------------------------------------------------------------
+ACCESS #4   WRITE app_logs.txt     vpn=40
+            route : L1[0] -> L2[1]
+            result: PAGE_FAULT frame 3  dirty=True
+            frames:
+              [0] video_meta.dat vpn=40 dirty=False
+              [1] inventory.db vpn=0 dirty=False
+              [2] inventory.db vpn=70 dirty=False
+              [3] app_logs.txt vpn=40 dirty=True
+------------------------------------------------------------------------------
+[EVICT]     LRU victim video_meta.dat vpn=40 (frame 0, dirty=False)  -> freeing for video_meta.dat vpn=130
+ACCESS #5   WRITE video_meta.dat   vpn=130
+            route : L1[1] -> L2[0]
+            result: PAGE_FAULT frame 0  dirty=True
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] inventory.db vpn=0 dirty=False
+              [2] inventory.db vpn=70 dirty=False
+              [3] app_logs.txt vpn=40 dirty=True
+------------------------------------------------------------------------------
+[EVICT]     LRU victim app_logs.txt vpn=40 (frame 3, dirty=True)  -> freeing for inventory.db vpn=200
+[WRITEBACK] app_logs.txt vpn=40 (frame 3) flushed to disk
+ACCESS #6   READ  inventory.db     vpn=200
+            route : L1[1] -> L2[2]
+            result: PAGE_FAULT frame 3  dirty=False
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] inventory.db vpn=0 dirty=False
+              [2] inventory.db vpn=70 dirty=False
+              [3] inventory.db vpn=200 dirty=False
+------------------------------------------------------------------------------
+[EVICT]     LRU victim inventory.db vpn=70 (frame 2, dirty=False)  -> freeing for app_logs.txt vpn=0
+ACCESS #7   READ  app_logs.txt     vpn=0
+            route : L1[0] -> L2[0]
+            result: PAGE_FAULT frame 2  dirty=False
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] inventory.db vpn=0 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=200 dirty=False
+------------------------------------------------------------------------------
+[EVICT]     LRU victim inventory.db vpn=0 (frame 1, dirty=False)  -> freeing for app_logs.txt vpn=200
+ACCESS #8   READ  app_logs.txt     vpn=200
+            route : L1[1] -> L2[2]
+            result: PAGE_FAULT frame 1  dirty=False
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] app_logs.txt vpn=200 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=200 dirty=False
+------------------------------------------------------------------------------
+ACCESS #9   READ  app_logs.txt     vpn=200
+            route : L1[1] -> L2[2]
+            result: TLB_HIT    frame 1  dirty=False
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] app_logs.txt vpn=200 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=200 dirty=False
+------------------------------------------------------------------------------
+[EVICT]     LRU victim inventory.db vpn=200 (frame 3, dirty=False)  -> freeing for inventory.db vpn=0
+ACCESS #10  READ  inventory.db     vpn=0
+            route : L1[0] -> L2[0]
+            result: PAGE_FAULT frame 3  dirty=False
+            frames:
+              [0] video_meta.dat vpn=130 dirty=True
+              [1] app_logs.txt vpn=200 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=0 dirty=False
+------------------------------------------------------------------------------
+[EVICT]     LRU victim video_meta.dat vpn=130 (frame 0, dirty=True)  -> freeing for inventory.db vpn=70
+[WRITEBACK] video_meta.dat vpn=130 (frame 0) flushed to disk
+ACCESS #11  READ  inventory.db     vpn=70
+            route : L1[0] -> L2[2]
+            result: PAGE_FAULT frame 0  dirty=False
+            frames:
+              [0] inventory.db vpn=70 dirty=False
+              [1] app_logs.txt vpn=200 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=0 dirty=False
+------------------------------------------------------------------------------
+ACCESS #12  READ  app_logs.txt     vpn=0
+            route : L1[0] -> L2[0]
+            result: TLB_HIT    frame 2  dirty=False
+            frames:
+              [0] inventory.db vpn=70 dirty=False
+              [1] app_logs.txt vpn=200 dirty=False
+              [2] app_logs.txt vpn=0 dirty=False
+              [3] inventory.db vpn=0 dirty=False
+------------------------------------------------------------------------------
+TRACE COMPLETE -- final statistics
+   hits        : 2
+   faults      : 10
+   tlb_hits    : 2
+   tlb_misses  : 10
+   writebacks  : 2
+------------------------------------------------------------------------------

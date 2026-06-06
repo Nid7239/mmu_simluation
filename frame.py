@@ -1,14 +1,9 @@
-
 from constants import PAGE_SIZE
 class Frame:
-    """One physical frame in simulated RAM."""
-
     def __init__(self, idx: int) -> None:
         self.idx:    int   = idx
         self.data:   bytes = b'\x00' * PAGE_SIZE
         self.in_use: bool  = False
-
-    # ------------------------------------------------------------------
 
     def load(self, data: bytes) -> None:
         """Write page data into this frame and mark it occupied."""
@@ -19,9 +14,7 @@ class Frame:
         """Wipe the frame and mark it free."""
         self.data   = b'\x00' * PAGE_SIZE
         self.in_use = False
-
-    # ------------------------------------------------------------------
-
+        
     def __repr__(self) -> str:
         status = "occupied" if self.in_use else "free"
         return f"Frame(idx={self.idx}, {status})"

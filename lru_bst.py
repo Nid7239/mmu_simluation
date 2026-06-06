@@ -78,8 +78,7 @@ def _min_node(n: _Node) -> _Node:
 def _delete(
     root: Optional[_Node],
     key:  tuple[str, int],
-    ts:   datetime,
-) -> Optional[_Node]:
+    ts:   datetime,) -> Optional[_Node]:
     """Delete the node whose (key, ts) matches exactly."""
     if root is None:
         return None
@@ -106,33 +105,14 @@ def _delete(
             root.right = _delete(root.right, key, ts)
 
     return _rebalance(root)
-
-
-# ---------------------------------------------------------------------------
-#  Public class
-# ---------------------------------------------------------------------------
-
 class LRUBST:
-    """
-    AVL-balanced BST that tracks least-recently-used (key, timestamp) pairs.
-
-    Keys are (file_id, vpn) tuples.  The oldest entry (smallest timestamp)
-    is always retrievable in O(log n) via remove_oldest().
-    """
-
     def __init__(self) -> None:
         self._root:   Optional[_Node]                        = None
         self._ts_map: dict[tuple[str, int], datetime]        = {}
 
-    # ------------------------------------------------------------------
-
     def touch(self, key: tuple[str, int], ts: datetime) -> None:
-        """
-        Record an access for *key* at time *ts*.
-
-        If the key is already tracked, the old node is removed before
-        re-insertion so the BST ordering stays correct.
-        """
+        """Record an access for *key* at time *ts*.
+        If the key is already tracked, the old node is removed before like it  (old timestamp is replaced by new)."""
         if key in self._ts_map:
             self._root = _delete(self._root, key, self._ts_map[key])
 
@@ -141,11 +121,7 @@ class LRUBST:
         self._ts_map[key] = ts
 
     def remove_oldest(self) -> Optional[tuple[str, int]]:
-        """
-        Remove and return the key with the smallest (oldest) timestamp.
-
-        Returns None if the tracker is empty.
-        """
+        """Remove and return the key with the smallest (oldest) timestamp. Returns None if the tracker is empty."""
         if self._root is None:
             return None
 
@@ -161,8 +137,6 @@ class LRUBST:
             return
         ts = self._ts_map.pop(key)
         self._root = _delete(self._root, key, ts)
-
-    # ------------------------------------------------------------------
 
     def __len__(self) -> int:
         return len(self._ts_map)
