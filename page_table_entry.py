@@ -1,14 +1,3 @@
-"""
-page_table_entry.py
-===================
-A single entry in a Level-2 page table.
-
-The entry is the authoritative holder of *all* metadata about a mapped
-virtual page.  The Frame it points to stores only raw bytes — every
-piece of control information (frame index, file identity, virtual page
-number, dirty bit, last-access timestamp) lives here.
-"""
-
 from __future__ import annotations
 from datetime import datetime
 
@@ -39,13 +28,9 @@ class PageTableEntry:
         self.dirty:       bool     = False
         self.last_access: datetime = last_access
 
-    # ------------------------------------------------------------------
-
     def touch(self, ts: datetime) -> None:
         """Update the last-access timestamp on a cache hit."""
         self.last_access = ts
-
-    # ------------------------------------------------------------------
 
     def __repr__(self) -> str:
         return (

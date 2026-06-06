@@ -1,16 +1,5 @@
-"""
-frame.py
-========
-A physical frame represents one fixed-size slot in simulated RAM.
-
-A frame holds *only* raw bytes and occupancy state.
-All higher-level metadata (file identity, virtual page number,
-access time, dirty flag) belongs to the PageTableEntry, not here.
-"""
 
 from constants import PAGE_SIZE
-
-
 class Frame:
     """One physical frame in simulated RAM."""
 

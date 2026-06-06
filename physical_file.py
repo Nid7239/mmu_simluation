@@ -1,13 +1,3 @@
-"""
-physical_file.py
-================
-Represents a file on disk as an addressable sequence of fixed-size pages.
-
-PhysicalFile is the MMU's view of the storage layer.  It exposes
-read_page() and write_page() so the MMU can load pages into frames on a
-fault and flush dirty pages on eviction — without knowing anything about
-the underlying filesystem.
-"""
 
 from __future__ import annotations
 import os

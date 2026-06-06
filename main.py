@@ -1,20 +1,3 @@
-"""
-main.py
-=======
-Simulation driver for the MMU.
-
-Creates three sample files, runs 120 random page accesses (30 % writes),
-and prints periodic progress to the console.
-
-Output files
-------------
-  output.log : High-level summary — frame table, page directory, TLB
-               state, and statistics at the end of the simulation.
-  trace.log  : Step-by-step internal trace — every access showing the
-               VPN bit-split, TLB/page-table lookup result, evictions,
-               writebacks, and a full frame snapshot after each step.
-"""
-
 from __future__ import annotations
 import os
 import random

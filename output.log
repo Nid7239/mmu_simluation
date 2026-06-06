@@ -10,10 +10,10 @@ MMU SIMULATION — FINAL STATE
 ── FRAME TABLE ─────────────────────────────────────────────────────────────────
 Frame   Status     File                     VPN    Dirty
 ────────────────────────────────────────────────────────────
-0       occupied   inventory.db             0      False
+0       occupied   app_logs.txt             4      True
 1       occupied   inventory.db             8      False
-2       occupied   app_logs.txt             2      True
-3       occupied   inventory.db             3      False
+2       occupied   app_logs.txt             2      False
+3       occupied   inventory.db             1      True
 
 ── PAGE DIRECTORY SUMMARY ──────────────────────────────────────────────────────
   L1[0] → L2[0] : 4 page(s) mapped
@@ -22,9 +22,9 @@ Frame   Status     File                     VPN    Dirty
 
 ── TLB STATE ───────────────────────────────────────────────────────────────────
   (inventory.db, vpn=   8)  →  frame 1
-  (inventory.db, vpn=   3)  →  frame 3
-  (inventory.db, vpn=   0)  →  frame 0
+  (inventory.db, vpn=   1)  →  frame 3
   (app_logs.txt, vpn=   2)  →  frame 2
+  (app_logs.txt, vpn=   4)  →  frame 0
 
 ── STATISTICS ──────────────────────────────────────────────────────────────────
   Total accesses  : 10
@@ -33,6 +33,6 @@ Frame   Status     File                     VPN    Dirty
   Hit ratio       : 10.0%
   TLB hits        : 1  (10.0%)
   TLB misses      : 9
-  Writebacks      : 2
+  Writebacks      : 0
   LRU tree size   : 4
 ================================================================================

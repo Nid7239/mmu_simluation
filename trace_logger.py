@@ -1,21 +1,3 @@
-"""
-trace_logger.py
-===============
-Writes a human-readable step-by-step trace of every MMU access to
-trace.log.
-
-Each access record shows:
-  • The file and VPN being requested (read or write)
-  • The VPN bit-split: which L1 table, which L2 table
-  • Where the translation was resolved (TLB / page table / page fault)
-  • On a page fault: which frame was allocated and, if eviction was
-    needed, which victim was displaced (and whether it was dirty)
-  • The final physical frame the access resolved to
-  • A live snapshot of every physical frame after the access
-
-This file is completely self-contained — it has no dependency on the
-MMU internals beyond what is passed explicitly to its methods.
-"""
 
 from __future__ import annotations
 import sys
@@ -31,18 +13,7 @@ _SEP_MID    = "·" * 80
 
 
 class TraceLogger:
-    """
-    Writes a detailed per-access trace to a log file.
-
-    Usage (inside MMU)
-    ------------------
-    On __init__   : TraceLogger(path)
-    On each access: logger.log_access(...)
-    On eviction   : logger.log_eviction(...)
-    On writeback  : logger.log_writeback(...)
-    At the end    : logger.log_frame_snapshot(frames)  then  logger.close()
-    """
-
+    
     def __init__(self, path: str = "trace.log") -> None:
         self._fh   = open(path, "w", encoding="utf-8")
         self._seq  = 0          # monotonic access counter

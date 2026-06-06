@@ -1,28 +1,7 @@
-"""
-lru_bst.py
-==========
-AVL-balanced binary search tree for O(log n) LRU tracking.
-
-Nodes are ordered by last-access timestamp.  The leftmost node (minimum
-timestamp) is always the least-recently-used entry — remove_oldest()
-finds and deletes it in O(log n).
-
-Each access updates the node for its key: the old node is deleted and a
-new one re-inserted with the current timestamp, keeping the BST ordering
-invariant correct.
-
-A companion dict (_ts_map) gives O(1) key → timestamp lookup so that
-re-insertions and targeted removals do not require a tree search.
-"""
 
 from __future__ import annotations
 from datetime import datetime
 from typing import Optional
-
-
-# ---------------------------------------------------------------------------
-#  Internal node
-# ---------------------------------------------------------------------------
 
 class _Node:
     __slots__ = ("key", "ts", "left", "right", "height")
@@ -33,12 +12,6 @@ class _Node:
         self.left:   Optional[_Node]  = None
         self.right:  Optional[_Node]  = None
         self.height: int              = 1
-
-
-# ---------------------------------------------------------------------------
-#  AVL helpers
-# ---------------------------------------------------------------------------
-
 def _height(n: Optional[_Node]) -> int:
     return n.height if n else 0
 
@@ -85,10 +58,6 @@ def _rebalance(n: _Node) -> _Node:
 
     return n
 
-
-# ---------------------------------------------------------------------------
-#  BST insert / delete
-# ---------------------------------------------------------------------------
 
 def _insert(root: Optional[_Node], node: _Node) -> _Node:
     if root is None:

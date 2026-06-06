@@ -1,32 +1,3 @@
-"""
-mmu.py
-======
-Memory Management Unit (MMU).
-
-The MMU sits between the application and physical RAM.  On every memory
-access it:
-
-  1. Checks the TLB (Translation Lookaside Buffer) for a cached mapping.
-  2. On a TLB miss, walks the multi-level page table.
-  3. On a page fault (no mapping exists), evicts the LRU frame, loads the
-     requested page from disk, and installs a new page table entry.
-  4. On a write, sets the dirty bit on the PageTableEntry.
-  5. On eviction of a dirty page, flushes it back to disk (writeback).
-
-Output files
-------------
-  output.log : high-level simulation summary and final state.
-  trace.log  : step-by-step internal trace of every access (optional,
-               enabled via trace=True in the constructor).
-
-Key data structures
--------------------
-  frames          : Fixed-size array of physical Frame objects (simulated RAM).
-  page_directory  : Root of the three-level page table hierarchy.
-  tlb             : Small, fast cache of recent virtual→physical translations.
-  lru             : AVL-balanced BST tracking least-recently-used pages.
-  _frame_to_key   : Reverse map (frame_idx → VPN key) for O(1) dump lookups.
-"""
 
 from __future__ import annotations
 import sys

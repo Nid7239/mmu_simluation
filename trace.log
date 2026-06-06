@@ -1,9 +1,9 @@
 ================================================================================
 MMU INTERNAL TRACE LOG
-Started : 2026-06-05  14:30:35
+Started : 2026-06-06  09:29:59
 ================================================================================
 
-[   1]  14:30:35.058  READ   app_logs.txt  vpn=5
+[   1]  09:29:59.402  READ   app_logs.txt  vpn=5
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 0 allocated
@@ -20,7 +20,7 @@ Started : 2026-06-05  14:30:35
   2       free       -                      -      -
   3       free       -                      -      -
 
-[   2]  14:30:35.061  READ   inventory.db  vpn=6
+[   2]  09:29:59.402  READ   inventory.db  vpn=4
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 1 allocated
@@ -33,11 +33,11 @@ Started : 2026-06-05  14:30:35
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
   0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           6      False
+  1       occupied   inventory.db           4      False
   2       free       -                      -      -
   3       free       -                      -      -
 
-[   3]  14:30:35.061  READ   app_logs.txt  vpn=4
+[   3]  09:29:59.403  READ   app_logs.txt  vpn=6
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 2 allocated
@@ -50,26 +50,82 @@ Started : 2026-06-05  14:30:35
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
   0       occupied   app_logs.txt           5      False
-  1       occupied   inventory.db           6      False
-  2       occupied   app_logs.txt           4      False
+  1       occupied   inventory.db           4      False
+  2       occupied   app_logs.txt           6      False
   3       free       -                      -      -
 
-[   4]  14:30:35.063  WRITE  app_logs.txt  vpn=5
+[   4]  09:29:59.403  READ   app_logs.txt  vpn=6
         VPN split  →  L1[0]  →  L2[0]
-        TLB HIT    →  frame 0  (no page-table walk needed)
-        Write applied  →  dirty bit SET on PTE
-        Resolved to frame 0  (dirty=True)
+        TLB HIT    →  frame 2  (no page-table walk needed)
+        Resolved to frame 2  (dirty=False)
 ················································································
 
   Physical Frame Table (RAM snapshot)
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      True
-  1       occupied   inventory.db           6      False
-  2       occupied   app_logs.txt           4      False
+  0       occupied   app_logs.txt           5      False
+  1       occupied   inventory.db           4      False
+  2       occupied   app_logs.txt           6      False
   3       free       -                      -      -
 
-[   5]  14:30:35.063  WRITE  app_logs.txt  vpn=2
+[   5]  09:29:59.404  READ   app_logs.txt  vpn=2
+        VPN split  →  L1[0]  →  L2[0]
+        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
+        Page loaded from disk  →  frame 3 allocated
+        Page table updated: L1[0] → L2[0] → frame 3
+        TLB updated with new entry
+        Resolved to frame 3  (dirty=False)
+················································································
+
+  Physical Frame Table (RAM snapshot)
+  Frame   Status     File                   VPN    Dirty
+  ────────────────────────────────────────────────────────
+  0       occupied   app_logs.txt           5      False
+  1       occupied   inventory.db           4      False
+  2       occupied   app_logs.txt           6      False
+  3       occupied   app_logs.txt           2      False
+
+        EVICT  frame 0  (app_logs.txt  vpn=5)  (clean)
+               to make room for  (inventory.db  vpn=3)
+[   6]  09:29:59.405  READ   inventory.db  vpn=3
+        VPN split  →  L1[0]  →  L2[0]
+        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
+        Page loaded from disk  →  frame 0 allocated
+        Page table updated: L1[0] → L2[0] → frame 0
+        TLB updated with new entry
+        Resolved to frame 0  (dirty=False)
+················································································
+
+  Physical Frame Table (RAM snapshot)
+  Frame   Status     File                   VPN    Dirty
+  ────────────────────────────────────────────────────────
+  0       occupied   inventory.db           3      False
+  1       occupied   inventory.db           4      False
+  2       occupied   app_logs.txt           6      False
+  3       occupied   app_logs.txt           2      False
+
+        EVICT  frame 1  (inventory.db  vpn=4)  (clean)
+               to make room for  (inventory.db  vpn=8)
+[   7]  09:29:59.405  READ   inventory.db  vpn=8
+        VPN split  →  L1[0]  →  L2[0]
+        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
+        Page loaded from disk  →  frame 1 allocated
+        Page table updated: L1[0] → L2[0] → frame 1
+        TLB updated with new entry
+        Resolved to frame 1  (dirty=False)
+················································································
+
+  Physical Frame Table (RAM snapshot)
+  Frame   Status     File                   VPN    Dirty
+  ────────────────────────────────────────────────────────
+  0       occupied   inventory.db           3      False
+  1       occupied   inventory.db           8      False
+  2       occupied   app_logs.txt           6      False
+  3       occupied   app_logs.txt           2      False
+
+        EVICT  frame 3  (app_logs.txt  vpn=2)  (clean)
+               to make room for  (inventory.db  vpn=1)
+[   8]  09:29:59.406  WRITE  inventory.db  vpn=1
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 3 allocated
@@ -82,33 +138,14 @@ Started : 2026-06-05  14:30:35
   Physical Frame Table (RAM snapshot)
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      True
-  1       occupied   inventory.db           6      False
-  2       occupied   app_logs.txt           4      False
-  3       occupied   app_logs.txt           2      True
-
-        EVICT  frame 1  (inventory.db  vpn=6)  (clean)
-               to make room for  (inventory.db  vpn=8)
-[   6]  14:30:35.065  READ   inventory.db  vpn=8
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 1 allocated
-        Page table updated: L1[0] → L2[0] → frame 1
-        TLB updated with new entry
-        Resolved to frame 1  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      True
+  0       occupied   inventory.db           3      False
   1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           4      False
-  3       occupied   app_logs.txt           2      True
+  2       occupied   app_logs.txt           6      False
+  3       occupied   inventory.db           1      True
 
-        EVICT  frame 2  (app_logs.txt  vpn=4)  (clean)
-               to make room for  (inventory.db  vpn=1)
-[   7]  14:30:35.066  READ   inventory.db  vpn=1
+        EVICT  frame 2  (app_logs.txt  vpn=6)  (clean)
+               to make room for  (app_logs.txt  vpn=2)
+[   9]  09:29:59.407  READ   app_logs.txt  vpn=2
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 2 allocated
@@ -120,70 +157,30 @@ Started : 2026-06-05  14:30:35
   Physical Frame Table (RAM snapshot)
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      True
+  0       occupied   inventory.db           3      False
   1       occupied   inventory.db           8      False
-  2       occupied   inventory.db           1      False
-  3       occupied   app_logs.txt           2      True
+  2       occupied   app_logs.txt           2      False
+  3       occupied   inventory.db           1      True
 
-        EVICT  frame 3  (app_logs.txt  vpn=2)  ← DIRTY — writeback required
-               to make room for  (inventory.db  vpn=3)
-        WRITEBACK  frame 3  →  disk  (app_logs.txt  vpn=2)
-[   8]  14:30:35.068  READ   inventory.db  vpn=3
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 3 allocated
-        Page table updated: L1[0] → L2[0] → frame 3
-        TLB updated with new entry
-        Resolved to frame 3  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   app_logs.txt           5      True
-  1       occupied   inventory.db           8      False
-  2       occupied   inventory.db           1      False
-  3       occupied   inventory.db           3      False
-
-        EVICT  frame 0  (app_logs.txt  vpn=5)  ← DIRTY — writeback required
-               to make room for  (inventory.db  vpn=0)
-        WRITEBACK  frame 0  →  disk  (app_logs.txt  vpn=5)
-[   9]  14:30:35.069  READ   inventory.db  vpn=0
+        EVICT  frame 0  (inventory.db  vpn=3)  (clean)
+               to make room for  (app_logs.txt  vpn=4)
+[  10]  09:29:59.407  WRITE  app_logs.txt  vpn=4
         VPN split  →  L1[0]  →  L2[0]
         TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
         Page loaded from disk  →  frame 0 allocated
         Page table updated: L1[0] → L2[0] → frame 0
         TLB updated with new entry
-        Resolved to frame 0  (dirty=False)
-················································································
-
-  Physical Frame Table (RAM snapshot)
-  Frame   Status     File                   VPN    Dirty
-  ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           0      False
-  1       occupied   inventory.db           8      False
-  2       occupied   inventory.db           1      False
-  3       occupied   inventory.db           3      False
-
-        EVICT  frame 2  (inventory.db  vpn=1)  (clean)
-               to make room for  (app_logs.txt  vpn=2)
-[  10]  14:30:35.069  WRITE  app_logs.txt  vpn=2
-        VPN split  →  L1[0]  →  L2[0]
-        TLB MISS   →  page-table walk  →  MISS  →  PAGE FAULT
-        Page loaded from disk  →  frame 2 allocated
-        Page table updated: L1[0] → L2[0] → frame 2
-        TLB updated with new entry
         Write applied  →  dirty bit SET on PTE
-        Resolved to frame 2  (dirty=True)
+        Resolved to frame 0  (dirty=True)
 ················································································
 
   Physical Frame Table (RAM snapshot)
   Frame   Status     File                   VPN    Dirty
   ────────────────────────────────────────────────────────
-  0       occupied   inventory.db           0      False
+  0       occupied   app_logs.txt           4      True
   1       occupied   inventory.db           8      False
-  2       occupied   app_logs.txt           2      True
-  3       occupied   inventory.db           3      False
+  2       occupied   app_logs.txt           2      False
+  3       occupied   inventory.db           1      True
 
 ================================================================================
 TRACE COMPLETE — FINAL STATISTICS
@@ -193,5 +190,5 @@ TRACE COMPLETE — FINAL STATISTICS
   Page faults    : 9
   TLB hits       : 1  (10.0%)
   TLB misses     : 9
-  Writebacks     : 2
+  Writebacks     : 0
 ================================================================================
